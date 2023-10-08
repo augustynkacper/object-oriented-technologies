@@ -3,6 +3,7 @@ package pl.edu.agh.iisg.to.model;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -26,7 +27,7 @@ public class Student {
 
     public static Optional<Student> create(final String firstName, final String lastName, final int indexNumber) {
         // TODO
-        String sql = "INSERT INTO student (first_name, last_name, index_number) VALUES (?)";
+        String sql = "INSERT INTO student (first_name, last_name, index_number) VALUES (?, ?, ?)";
 
         // TODO
         // it is important to maintain the correct order of the variables
@@ -43,7 +44,8 @@ public class Student {
 
     public static Optional<Student> findByIndexNumber(final int indexNumber) {
         // TODO
-        return Optional.empty();
+        String sql = "SELECT * FROM student WHERE index_number = ?";
+        return find(indexNumber, sql);
     }
 
     public static Optional<Student> findById(final int id) {
@@ -55,7 +57,13 @@ public class Student {
         Object[] args = {value};
         try {
             ResultSet rs = QueryExecutor.read(sql, args);
-            return Optional.of(new Student(rs.getInt("id"), rs.getString("first_name"), rs.getString("last_name"), rs.getInt("index_number")));
+            if (rs.next()) {
+                return Optional.of(new Student(
+                        rs.getInt("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getInt("index_number")));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -64,7 +72,26 @@ public class Student {
 
     public Map<Course, Float> createReport() {
         // TODO additional task
-        return Collections.emptyMap();
+        var sql = "SELECT c.name, grade.course_id as id, avg(grade) as avg FROM grade\n" +
+                "    JOIN course c on grade.course_id = c.id\n" +
+                "JOIN student_course sc on grade.student_id = sc.student_id\n" +
+                "WHERE sc.student_id = ?\n" +
+                "GROUP BY grade.course_id\n";
+        Object[] args = { this.id };
+        Map<Course, Float> reportMap = new HashMap<>();
+        try {
+            var rs = QueryExecutor.read(sql, args);
+            while (rs.next()) {
+                reportMap.put(
+                        new Course(rs.getInt("id"), rs.getString("name")),
+                        rs.getFloat("avg")
+                );
+            }
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+        System.out.println(reportMap);
+        return reportMap;
     }
 
     public int id() {

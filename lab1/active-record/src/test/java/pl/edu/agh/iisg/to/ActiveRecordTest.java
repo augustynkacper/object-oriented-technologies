@@ -61,7 +61,7 @@ public class ActiveRecordTest {
         var student = Student.create("Kasia", "Kowalska", 200124);
         var foundStudent = Student.findById(student.get().id());
         var nonExistingStudent = Student.findById(Integer.MAX_VALUE);
-
+        System.out.println(nonExistingStudent);
         // Then
         checkStudent(foundStudent);
         Assertions.assertEquals(student.get(), foundStudent.get());
