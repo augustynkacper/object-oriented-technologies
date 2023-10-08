@@ -1,5 +1,6 @@
 package pl.edu.agh.iisg.to;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -99,8 +100,8 @@ public class OrmTest {
         boolean studentEnrolled = courseDao.enrollStudent(course.get(), student.get());
         boolean reundantStudentEnroll = courseDao.enrollStudent(course.get(), student.get());
 
-        var courseStudents = course.get().studentSet();
-        var studentCourses = student.get().courseSet();
+        var courseStudents = courseDao.findByName(course.get().name()).get().studentSet();
+        var studentCourses = studentDao.findByIndexNumber(student.get().indexNumber()).get().courseSet();
 
         // Then
         checkStudent(student);
@@ -137,18 +138,22 @@ public class OrmTest {
         // When
         var student = studentDao.create("Kasia", "Kowalska", 900124);
         var course = courseDao.create("MOWNIT 2");
+        Set<Grade> resultStudentGrades;
 
-        var initialStudentGrades = student.get().gradeSet();
-        boolean studentGraded = gradeDao.gradeStudent(student.get(), course.get(), 5.0f);
-        var resultStudentGrades = student.get().gradeSet();
+        var initialStudentGrades = new HashSet<>(student.get().gradeSet());
+        boolean studentGraded1 = gradeDao.gradeStudent(student.get(), course.get(), 5.0f);
+        boolean studentGraded2 = gradeDao.gradeStudent(student.get(), course.get(), 4.0f);
+        resultStudentGrades  = studentDao.findByIndexNumber(student.get().indexNumber()).get().gradeSet();
+
 
         // Then
         checkStudent(student);
         checkCourse(course);
 
-        assertTrue(studentGraded);
+        assertTrue(studentGraded1);
+        assertTrue(studentGraded2);
         assertEquals(0, initialStudentGrades.size());
-        assertEquals(1, resultStudentGrades.size());
+        assertEquals(2, resultStudentGrades.size());
     }
 
     @Test
@@ -164,6 +169,11 @@ public class OrmTest {
         gradeDao.gradeStudent(student.get(), course2.get(), 3.0f);
 
         Map<Course, Float> report = studentDao.createReport(student.get());
+
+        System.out.println(course1.isPresent());
+        System.out.println(course2.isPresent());
+
+        System.out.println(report);
 
         // Then
         checkStudent(student);

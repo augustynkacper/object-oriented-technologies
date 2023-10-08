@@ -93,6 +93,20 @@ public class Student {
         result = 31 * result + firstName.hashCode();
         result = 31 * result + lastName.hashCode();
         result = 31 * result + indexNumber;
+        result = 31 * result + gradeSet.size();
+        result = 31 * result + courseSet.size();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", indexNumber=" + indexNumber +
+                ", gradeSet=" + gradeSet +
+                ", courseSet=" + courseSet.size() +
+                '}';
     }
 }

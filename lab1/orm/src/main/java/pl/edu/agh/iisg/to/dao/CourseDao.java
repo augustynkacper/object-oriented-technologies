@@ -43,6 +43,23 @@ public class CourseDao extends GenericDao<Course> {
 
 	public boolean enrollStudent(final Course course, final Student student) {
 		// TODO implement
+		StudentDao studentDao = new StudentDao();
+		if (course.studentSet().contains(student) ||
+			student.courseSet().contains(course)) {
+			return false;
+		}
+		try {
+			if (findByName(course.name()).isPresent() &&
+				studentDao.findByIndexNumber(student.indexNumber()).isPresent()) {
+				course.studentSet().add(student);
+				student.courseSet().add(course);
+				update(course);
+				studentDao.update(student);
+				return true;
+			}
+		} catch (PersistenceException e){
+			e.printStackTrace();
+		}
 		return false;
 	}
 }

@@ -74,6 +74,18 @@ public class Course {
     public int hashCode() {
         int result = id;
         result = 31 * result + name.hashCode();
+        result = 31 * result + studentSet.size();
+        result = 31 * result + gradeSet.size();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Course{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", studentSet=" + studentSet +
+                ", gradeSet=" + gradeSet +
+                '}';
     }
 }
