@@ -121,7 +121,10 @@ public class OrmTest {
         var student2 = studentDao.create("Jan", "Paciaciak", 800126);
         var course = courseDao.create("WDI");
 
-        var students = course.get().studentSet();
+        courseDao.enrollStudent(course.get(), student1.get());
+        courseDao.enrollStudent(course.get(), student2.get());
+
+        var students = courseDao.findByName(course.get().name()).get().studentSet();
 
         // Then
         checkStudent(student1);
@@ -169,11 +172,6 @@ public class OrmTest {
         gradeDao.gradeStudent(student.get(), course2.get(), 3.0f);
 
         Map<Course, Float> report = studentDao.createReport(student.get());
-
-        System.out.println(course1.isPresent());
-        System.out.println(course2.isPresent());
-
-        System.out.println(report);
 
         // Then
         checkStudent(student);

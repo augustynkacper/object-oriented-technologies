@@ -52,13 +52,12 @@ public class StudentDao extends GenericDao<Student> {
         try {
             var optionalStudent = findByIndexNumber(stdnt.indexNumber());
             if (optionalStudent.isPresent()) {
-                var student = optionalStudent.get();
-                Map<Course, Float> reportMap = new HashMap<>();
-                for (Grade grade : student.gradeSet()) {
-                    reportMap.put(grade.course(),
-                            reportMap.getOrDefault(grade.course(), 0f) + grade.grade());
-                }
-                return reportMap;
+                return optionalStudent.get().courseSet().stream()
+                        .filter(course -> !course.gradeSet().isEmpty())
+                        .collect(Collectors.toMap(
+                                course -> course,
+                                course -> course.gradeSet().stream().map(Grade::grade).reduce(0f, Float::sum) / course.gradeSet().size()
+                        ));
             }
         } catch (PersistenceException e){
             e.printStackTrace();

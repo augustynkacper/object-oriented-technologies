@@ -19,12 +19,14 @@ public class GradeDao extends GenericDao<Grade> {
             if (studentDao.findByIndexNumber(student.indexNumber()).isPresent() &&
                     courseDao.findByName(course.name()).isPresent()) {
                 var grade = new Grade(student, course, gradeValue);
+                courseDao.enrollStudent(course, student);
+                save(grade);
+
                 course.gradeSet().add(grade);
                 student.gradeSet().add(grade);
 
                 studentDao.update(student);
                 courseDao.update(course);
-                save(grade);
                 return true;
             }
         } catch(PersistenceException e){

@@ -74,8 +74,6 @@ public class Course {
     public int hashCode() {
         int result = id;
         result = 31 * result + name.hashCode();
-        result = 31 * result + studentSet.size();
-        result = 31 * result + gradeSet.size();
         return result;
     }
 
