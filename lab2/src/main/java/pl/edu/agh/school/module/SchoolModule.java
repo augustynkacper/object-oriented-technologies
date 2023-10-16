@@ -3,6 +3,7 @@ package pl.edu.agh.school.module;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.name.Names;
+import pl.edu.agh.logger.Logger;
 import pl.edu.agh.school.persistence.IPersistenceManager;
 import pl.edu.agh.school.persistence.SerializablePersistenceManager;
 
@@ -21,6 +22,7 @@ public class SchoolModule extends AbstractModule {
         bind(String.class)
                 .annotatedWith(Names.named("teachersStorageFile"))
                 .toInstance("teachers.dat");
+        bind(Logger.class).toInstance(new Logger());
     }
 
     @Provides
